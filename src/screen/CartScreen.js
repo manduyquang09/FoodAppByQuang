@@ -87,7 +87,7 @@ const CartScreen = ({ navigation }) => {
                     (
 
                         <>
-                            <Text style={styles.orderId}>{restaurantList.find(restaurant => restaurant.restaurantId === Object.keys(item)[0]).name}</Text>
+                            <Text style={styles.nameRestaurant}>{restaurantList.find(restaurant => restaurant.restaurantId === Object.keys(item)[0]).name}</Text>
                             <FlatList
                                 data={Object.values(item)[0]}
                                 renderItem={(item) =>
@@ -96,7 +96,7 @@ const CartScreen = ({ navigation }) => {
                                         <Image source={{ uri: Object.values(item)[0].Img }} style={styles.cardimage} />
                                     </View>
 
-                                    <View style={styles.orderItemContainer_2}>
+                                    <View style={styles.ItemContainer}>
                                         <View>
                                             <Text style={styles.orderItemName}>{Object.values(item)[0].nameFood}</Text>
                                             <Text style={styles.orderItemPrice} >{Object.values(item)[0].price}</Text>
@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
         borderRadius: 20,
     },
-    orderId: {
+    nameRestaurant: {
         fontSize: 16,
         color: 'grey',
         paddingHorizontal: 10,
@@ -178,17 +178,8 @@ const styles = StyleSheet.create({
         borderColor: '#d9d9d9',
         paddingVertical: 5,
     },
-    orderTime: {
-        paddingHorizontal: 6,
-        paddingVertical: 5,
-    },
-    orderTotal: {
-        fontSize: 17,
-        textAlign: 'right',
-        marginVertical: 5,
-        marginRight: 20,
-        fontWeight: '600',
-    },
+
+
     orderItemContainer: {
         flexDirection: 'row',
         backgroundColor: 'green',
@@ -206,7 +197,7 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 20,
         borderTopLeftRadius: 20,
     },
-    orderItemContainer_2: {
+    ItemContainer: {
         paddingHorizontal: 10,
         flexDirection: 'row',
         justifyContent: 'space-between',

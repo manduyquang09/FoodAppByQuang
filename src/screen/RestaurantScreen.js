@@ -39,7 +39,7 @@ const RestaurantScreen = ({ navigation, route }) => {
                 <View style={styles.header}>
                     <Text style={styles.restaurantName}>{restaurant.name}</Text>
                     <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Text style={styles.closeButton}>Close</Text>
+                        <Text style={styles.closeBtn}>Close</Text>
                     </TouchableOpacity>
                 </View>
             </ImageBackground>
@@ -48,7 +48,7 @@ const RestaurantScreen = ({ navigation, route }) => {
                 <Text style={styles.sectionTitle}>Restaurant Information</Text>
                 <Text>{`Location: ${restaurant.address}`}</Text>
 
-                <Text style={styles.sectionTitle}>Menu</Text>
+                <Text style={styles.Menu}>Menu</Text>
 
                 <FlatList
                     data={menu}
@@ -79,21 +79,19 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 18,
     },
-    closeButton: {
+    closeBtn: {
         color: 'white',
     },
     content: {
 
         padding: 16,
     },
-    sectionTitle: {
+    Menu: {
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 10,
     },
-    foodItem: {
-        marginBottom: 10,
-    },
+
 });
 
 export default RestaurantScreen;

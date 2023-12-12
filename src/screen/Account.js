@@ -37,7 +37,7 @@ const Account = () => {
             </View>
 
             <View style={{ flex: 1 }}>
-                <TouchableOpacity style={styles.logoutButton}>
+                <TouchableOpacity style={styles.logoutBtn}>
                     <Text style={styles.logoutButtonTxt}>Logout</Text>
                 </TouchableOpacity>
             </View>
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
         // padding: 16,
         backgroundColor: '#fff',
     },
-    logoutButton: {
+    logoutBtn: {
         position: 'absolute',
         bottom: 0,
         left: 0,

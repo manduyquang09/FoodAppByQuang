@@ -40,20 +40,20 @@ const FoodDetailScreen = ({ navigation, route }) => {
                     <Text style={{ color: 'white' }}>Close</Text>
                 </TouchableOpacity>
             </View>
-            <View style={styles.containerIn}>
-                <View style={styles.containerIn1}>
+            <View style={styles.mainContainer}>
+                <View style={styles.containerImg}>
                     <Image source={{ uri: selectedfood.Img }} style={styles.cardimage} />
                 </View>
 
-                <View style={styles.containerIn2}>
-                    <View style={styles.containerIn2_s1}>
-                        <Text style={styles.containerIn2_s1_foodname}>{selectedfood.nameFood}</Text>
-                        <Text style={styles.containerIn2_s1_foodprice}>{selectedfood.price} Đ</Text>
+                <View style={styles.foodContainer}>
+                    <View style={styles.container}>
+                        <Text style={styles.foodname}>{selectedfood.nameFood}</Text>
+                        <Text style={styles.foodprice}>{selectedfood.price} Đ</Text>
                     </View>
 
-                    <View style={styles.containerIn2_s2}>
-                        <Text style={styles.containerIn2_s2_head}>About food</Text>
-                        <Text style={styles.containerIn2_s2_description}>Best Food that is availble in our country</Text>
+                    <View style={styles.desContainer}>
+                        <Text style={styles.About}>About food</Text>
+                        <Text style={styles.description}>Best Food that is availble in our country</Text>
 
 
                     </View>
@@ -107,10 +107,10 @@ const styles = StyleSheet.create({
         height: '100%'
 
     },
-    containerIn: {
+    mainContainer: {
         backgroundColor: '#ebebeb'
     },
-    containerIn1: {
+    containerImg: {
         width: '100%',
         height: 220,
         backgroundColor: '#fff',
@@ -123,14 +123,12 @@ const styles = StyleSheet.create({
         height: '100%',
 
     },
-    containerIn2: {
+    foodContainer: {
         width: '100%',
         padding: 20,
         position: 'relative',
         top: -30,
         backgroundColor: '#ebebeb',
-        // borderTopLeftRadius: 20,
-        // borderTopRightRadius: 20,
     },
     containerIn2_s1: {
         flexDirection: 'row',
@@ -139,27 +137,27 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         paddingHorizontal: 10
     },
-    containerIn2_s1_foodname: {
+    foodname: {
         fontSize: 25,
         fontWeight: '600',
         width: 220,
         marginRight: 10
     },
-    containerIn2_s1_foodprice: {
+    foodprice: {
         fontSize: 26,
         fontWeight: '600',
     },
-    containerIn2_s2: {
+    desContainer: {
         backgroundColor: 'white',
         paddingHorizontal: 15,
         paddingVertical: 10,
         borderRadius: 20,
     },
-    containerIn2_s2_head: {
+    About: {
         fontSize: 18,
         fontWeight: '600',
     },
-    containerIn2_s2_description: {
+    description: {
         paddingTop: 10,
         fontSize: 15,
     },
@@ -173,35 +171,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 5
     },
-    containerIn2_s3: {
-        backgroundColor: '#F2F2F2',
-        width: '100%',
 
-        padding: 20,
-        borderRadius: 20,
-        alignSelf: 'center',
-        marginVertical: 10,
-        elevation: 2,
-        alignItems: 'center',
-    },
-    containerIn2_s3_restaurantnameheading: {
-        color: 'grey',
-        fontSize: 20,
-        fontWeight: '600',
-    },
-    containerIn2_s3_restaurantname: {
-        color: '#9c9c9c',
-        fontSize: 16,
-        fontWeight: '600',
-        marginVertical: 10,
-    },
-    containerIn3: {
-        width: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 0,
-        flexDirection: 'row',
-    },
     containerFormAdd: {
         width: '90%',
         alignSelf: 'center',
@@ -254,27 +224,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
     },
-    containerIn3_buybtn: {
-        width: '90%',
-        height: 50,
-        backgroundColor: '#FF3F00',
-        borderRadius: 25,
-        alignItems: 'center',
-        justifyContent: 'center',
-        elevation: 2,
-        color: 'black',
-        margin: 10,
-        alignSelf: 'center',
-    },
-    containerIn3_buybtn_txt: {
-        color: '#F2F2F2',
-        paddingVertical: 5,
-        fontSize: 17,
-        borderRadius: 10,
-        // width: '90%',
-        textAlign: 'center',
-        fontWeight: '600',
-        alignSelf: 'center'
-    }
+
 
 })
