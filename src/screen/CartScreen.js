@@ -1,211 +1,284 @@
 import {
-    FlatList,
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  FlatList,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  StatusBar,
+  Alert,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
-import { CartByRestaurant } from '../service/solvingTask';
-import FoodItem from '../components/FoodItem';
-import jestConfig from '../../jest.config';
-import { set } from 'firebase/database';
+import React, {useEffect, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import {getFinalAmount, sendingOrder} from '../service/solvingTask';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import CustomButton from '../components/CustomButton';
-import { DelCartItem } from '../redux/action/AuthAction';
+import {DelCartItem} from '../redux/action/authAction';
+import {
+  PaymentCard,
+  Header,
+  Space,
+  CustomButton,
+  FoodItem,
+} from '../components/index';
+import {Colors} from '../contants';
+import {Setheight, Setwidth} from '../ultis/display';
+const CartScreen = ({navigation}) => {
+  const cart = useSelector(state => state.user.cart);
+  const {restaurantList, foodList} = useSelector(state => state.supply);
+  const [cartbyRestaurant, setCartbyRestaurant] = useState([]);
+  const dispatch = useDispatch();
+  const sortingCart = () => {
+    const newCart = cart.reduce((accumulator, item) => {
+      const key = item.restaurantId;
+      const value = {
+        foodId: item.foodId,
+        unit: item.unit,
+        nameFood: item.nameFood,
+        restaurantId: item.restaurantId,
+        price: item.price,
+        Img: item.Img,
+      };
 
-const CartScreen = ({ navigation }) => {
-    const cart = useSelector(state => state.user.cart);
-    const { restaurantList, foodList } = useSelector(state => state.supply);
-    const [cartbyRestaurant, setCartbyRestaurant] = useState([])
-    const [done, setDone] = useState(false)
-    const dispatch = useDispatch()
-    const SortingCart = () => {
+      if (accumulator[key]) {
+        accumulator[key].push(value);
+      } else {
+        accumulator[key] = [value];
+      }
 
-        const newCart = cart.reduce((accumulator, item) => {
-            console.log("KEY :  " + JSON.stringify(item))
-            const key = item.restaurantId
-            const value = {
-                "foodId": item.foodId,
-                "unit": item.unit,
-                "nameFood": item.nameFood,
-                "restaurantId": item.restaurantId,
-                "price": item.price,
-                "Img": item.Img
-            };
+      return accumulator;
+    }, {});
 
-            if (accumulator[key]) {
-                accumulator[key].push(value);
-            } else {
-                accumulator[key] = [value];
-            }
-
-            return accumulator;
-        }, {});
-
-        const finalCart = Object.keys(newCart).map(key => {
-            const resCart = {};
-            resCart[key] = newCart[key];
-            return resCart;
-        });
-        return finalCart
-    };
-    const CreateOrder = () => {
-
+    const finalCart = Object.keys(newCart).map(key => {
+      const resCart = {};
+      resCart[key] = newCart[key];
+      return resCart;
+    });
+    return finalCart;
+  };
+  useEffect(() => {
+    if (cart.length > 0) {
+      sortingCart().map(item => {});
+      setCartbyRestaurant(sortingCart());
+    } else {
+      setCartbyRestaurant([]);
     }
-    useEffect(() => {
-        if (cart.length > 0) {
-            SortingCart().map((item) => {
-                console.log("123 :  " + JSON.stringify(Object.values(item)[0]))
-            })
-            setCartbyRestaurant(SortingCart())
-        } else {
-            setCartbyRestaurant([])
-        }
+  }, [cart]);
+  const orderClick = async () => {
+    await sendingOrder(cartbyRestaurant)
+      .then(res => {
+        Alert.alert(res.message);
+        dispatch(DelCartItem());
+      })
+      .catch(err => {});
+  };
+  return (
+    <View style={styles.container}>
+      <StatusBar
+        backgroundColor={'white'}
+        translucent
+        barStyle={'dark-content'}
+      />
+      <Space Size={StatusBar.currentHeight} />
+      <Header onPress={() => navigation.goBack()} title={'My Cart'} />
 
-    }, [cart]);
-
-    return (
-        <View style={styles.container}>
-            <View
+      {cartbyRestaurant.length > 0 ? (
+        <>
+          <ScrollView>
+            {cartbyRestaurant.map(item => (
+              <View
                 style={{
-                    backgroundColor: '#FF3F00',
-                    paddingVertical: 15,
-                    paddingHorizontal: 15,
-                    marginTop: 30,
-                }}></View>
-
-            <ScrollView>
-                <Text style={styles.mainHeading}>My Orders</Text>
-                <View style={styles.mainContainer}>
-                    {cartbyRestaurant.length > 0 ? cartbyRestaurant.map((item) =>
-
-                    (
-
-                        <>
-                            <Text style={styles.nameRestaurant}>{restaurantList.find(restaurant => restaurant.restaurantId === Object.keys(item)[0]).name}</Text>
-                            <FlatList
-                                data={Object.values(item)[0]}
-                                renderItem={(item) =>
-                                (<View style={styles.orderItemContainer}>
-                                    <View>
-                                        <Image source={{ uri: Object.values(item)[0].Img }} style={styles.cardimage} />
-                                    </View>
-
-                                    <View style={styles.ItemContainer}>
-                                        <View>
-                                            <Text style={styles.orderItemName}>{Object.values(item)[0].nameFood}</Text>
-                                            <Text style={styles.orderItemPrice} >{Object.values(item)[0].price}</Text>
-                                            <Text>Qty : {Object.values(item)[0].unit}</Text>
-
-                                        </View>
-
-                                    </View>
-                                    <View
-                                        style={{
-                                            paddingHorizontal: 10
-
-                                            ,
-                                            justifyContent: 'center'
-                                        }}
-                                    >
-
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                if (cart.length > 0) {
-                                                    dispatch(DelCartItem(Object.values(item)[0].foodId))
-                                                }
-                                                else { return }
-                                            }}
-                                        ><Icon
-                                                name={"delete"}
-                                                size={30}
-                                                color={"green"}
-                                            /></TouchableOpacity>
-                                    </View>
-                                </View>
-                                )
-                                }
-                            />
-                        </>
-                    )
-                    ) : (<>
-                        <Text>Nothing</Text>
-                    </>)}
-
-                </View>
-                <CustomButton
-                    label={"Thanh Toan"}
-                    backgroundColor={"red"}
-                    onPress={() => navigation.navigate("Order", { orderList: cartbyRestaurant, cart: cart })}
+                  paddingHorizontal: 15,
+                }}>
+                <Text
+                  style={{
+                    fontSize: 15,
+                    color: '#000',
+                    fontWeight: '500',
+                    marginTop: 10,
+                  }}>
+                  {
+                    restaurantList.find(
+                      restaurant =>
+                        restaurant.restaurantId === Object.keys(item)[0],
+                    ).name
+                  }{' '}
+                </Text>
+                <FlatList
+                  style={styles.resCard}
+                  data={Object.values(item)[0]}
+                  ListHeaderComponent={() => <Space Size={6} />}
+                  ListFooterComponent={() => <Space Size={10} />}
+                  ItemSeparatorComponent={() => <Space Size={10} />}
+                  renderItem={({item}) => (
+                    <FoodItem
+                      isRemove={true}
+                      onPress={() =>
+                        navigation.navigate('foodDetail', {
+                          selectedfood: item,
+                        })
+                      }
+                      selectedfood={item}
+                      cart={cart}
+                    />
+                  )}
                 />
-            </ScrollView>
+              </View>
+            ))}
+            <Space Size={20} />
+            <Space Size={10} borderTopWidth={1} marginHorizontal={15} />
+            <View style={styles.paymentContainer}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '500',
+                    color: '#000',
+                    marginBottom: 10,
+                  }}>
+                  Payment method
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '500',
+                    color: '#F5CA48',
+                  }}>
+                  Add new
+                </Text>
+              </View>
+              <PaymentCard />
+            </View>
+            <Space Size={20} />
+            <Space Size={10} borderTopWidth={1} marginHorizontal={15} />
 
-        </View>
-    );
+            <View style={styles.itemTotal}>
+              <Text style={styles.totalText}>Item total</Text>
+              <Text style={styles.totalAmount}>{50000}D</Text>
+            </View>
+            <View style={styles.itemTotal}>
+              <Text style={styles.totalText}>Discount</Text>
+              <Text style={styles.totalAmount}>10%</Text>
+            </View>
+            <View style={styles.itemTotal}>
+              <Text style={[styles.totalText, {color: Colors.GOOGLE_BLUE}]}>
+                Delivery
+              </Text>
+              <Text
+                style={[
+                  styles.totalAmount,
+                  {fontWeight: 'bold', color: Colors.GOOGLE_BLUE},
+                ]}>
+                Free
+              </Text>
+            </View>
+            <Space Size={20} />
+            <Space Size={10} borderTopWidth={1} marginHorizontal={15} />
+            <View style={styles.itemTotal}>
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  color: Colors.GOOGLE_BLUE,
+                  fontSize: 20,
+                }}>
+                Total
+              </Text>
+              <Text
+                style={[
+                  styles.totalAmount,
+                  {fontWeight: 'bold', color: Colors.GOOGLE_BLUE},
+                ]}>
+                {getFinalAmount(cart)}
+              </Text>
+            </View>
+            <Space Size={10} />
+            <CustomButton
+              onPress={() => orderClick()}
+              label={'Order Now'}
+              Icon={
+                <Icon
+                  size={25}
+                  color={Colors.FABEBOOK_BLUE}
+                  name="shopping-cart-checkout"
+                />
+              }
+              backgroundColor={Colors.FABEBOOK_BLUE}
+            />
+          </ScrollView>
+        </>
+      ) : (
+        <>
+          <View style={styles.emptyCart}>
+            <Image
+              style={styles.emptyImg}
+              resizeMode="contain"
+              source={require('../assests/images/empty_cart.png')}
+            />
+            <Text style={{fontSize: 20, color: '#000', lineHeight: 30 * 1.4}}>
+              Go ahead and order some tasty food
+            </Text>
+            <CustomButton
+              label={'Go home'}
+              backgroundColor={'#143e2f'}
+              onPress={() => navigation.navigate('Home')}
+            />
+          </View>
+        </>
+      )}
+    </View>
+  );
 };
 
 export default CartScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    mainHeading: {
-        fontSize: 20,
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        fontWeight: '500',
-    },
+  container: {
+    flex: 1,
+  },
 
-    mainContainer: {
-        marginBottom: 10,
-        marginHorizontal: 10,
-        elevation: 2,
-        backgroundColor: 'white',
-        paddingVertical: 5,
-        borderRadius: 20,
-    },
-    nameRestaurant: {
-        fontSize: 16,
-        color: 'grey',
-        paddingHorizontal: 10,
-        borderBottomWidth: 1,
-        borderColor: '#d9d9d9',
-        paddingVertical: 5,
-    },
-
-
-    orderItemContainer: {
-        flexDirection: 'row',
-        backgroundColor: 'green',
-        marginVertical: 2,
-        width: '95%',
-        alignSelf: 'center',
-        borderRadius: 20,
-        backgroundColor: '#f2f2f2',
-        elevation: 2,
-
-    },
-    cardimage: {
-        width: 90,
-        height: 80,
-        borderBottomLeftRadius: 20,
-        borderTopLeftRadius: 20,
-    },
-    ItemContainer: {
-        paddingHorizontal: 10,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        flex: 1
-    },
-    orderItemName: {
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    orderItemPrice: {},
+  image: {
+    height: '99%',
+    width: 10,
+    margin: 6,
+    borderRadius: 8,
+  },
+  emptyCart: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyImg: {
+    height: 150 * Setheight,
+    width: 150 * Setwidth,
+  },
+  resCard: {
+    padding: 10,
+    backgroundColor: '#fff',
+    elevation: 3,
+  },
+  paymentContainer: {
+    paddingHorizontal: 15,
+  },
+  itemTotal: {
+    marginTop: 10,
+    paddingHorizontal: 15,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  totalText: {
+    color: '#000',
+    fontSize: 17,
+    lineHeight: 15 * 1.4,
+    fontWeight: '500',
+  },
+  totalAmount: {
+    fontSize: 20,
+    lineHeight: 15 * 1.4,
+    color: '#000',
+  },
 });

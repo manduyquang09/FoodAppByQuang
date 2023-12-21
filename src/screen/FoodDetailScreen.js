@@ -1,229 +1,309 @@
-import { Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useContext, useEffect, useState } from 'react'
-import { AuthContext } from '../Context/AuthContext'
-import { firebase } from '../Firebase/FirebaseConfig'
-import Space from '../components/Space'
-import CustomButton from '../components/CustomButton'
-import { useDispatch, useSelector } from 'react-redux'
-import { updateCart } from '../redux/action/AuthAction'
+import {
+  Image,
+  ImageBackground,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import React, {useContext, useEffect, useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
+import {updateCart} from '../redux/action/authAction';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import {Colors} from '../contants';
+import {Space} from '../components/index';
+import {Setheight} from '../ultis/display';
+const FoodDetailScreen = ({navigation, route}) => {
+  const dispatch = useDispatch();
+  const selectedfood = route.params.selectedfood;
+  console.log('Img : ' + JSON.stringify(selectedfood));
+  const cart = useSelector(state => state.user.cart);
+  const [unit, setUnit] = useState(selectedfood.unit);
+  const ChangeUnit = number => {
+    const updatedFood = {...selectedfood, unit: number};
+    setUnit(number);
+    selectedfood.unit = number;
+    dispatch(updateCart(updatedFood));
+  };
+  useEffect(() => {
+    StatusBar.setHidden(true, 'slide');
 
-const FoodDetailScreen = ({ navigation, route }) => {
-
-    const dispatch = useDispatch()
-    const selectedfood = route.params.food
-    const cart = useSelector((state) => state.user.cart)
-    const [unit, setUnit] = useState(0)
-    const ChangeUnit = (number) => {
-        setUnit(number)
-
-
+    return () => {
+      StatusBar.setHidden(false, 'slide');
+    };
+  }, []);
+  useEffect(() => {
+    console.log('1234:  ' + JSON.stringify(cart));
+    if (cart.length > 0) {
+      foodUnit = cart.find(food => food.foodId === selectedfood.foodId);
+      if (foodUnit) {
+        console.log('unit : ' + foodUnit.unit);
+        selectedfood.unit = foodUnit.unit;
+        setUnit(foodUnit.unit);
+      } else {
+        selectedfood.unit = 0;
+        console.log('unit1 : ' + selectedfood.unit);
+        setUnit(0);
+      }
+    } else {
+      selectedfood.unit = 0;
+      console.log('unit2 : ' + selectedfood.unit);
+      setUnit(0);
     }
-    useEffect(() => {
-        if (cart.length > 0) {
-            foodUnit = cart.find((food) => food.foodId === selectedfood.foodId)
-            if (foodUnit) {
-                setUnit(foodUnit.unit)
-            }
-
-        }
-    }, [])
+  }, [cart]);
+  const Button = ({IconName, isPluss}) => {
+    let number = 0;
+    if (isPluss) {
+      number = selectedfood.unit + 1;
+    } else if (!isPluss && selectedfood.unit > 0) {
+      number = selectedfood.unit - 1;
+    }
     return (
-        <ScrollView style={styles.container}>
-            <StatusBar backgroundColor={'#FF3F00'}
-                translucent
-            />
-            <Space Size={24} />
-            <View style={{ backgroundColor: '#FF3F00', paddingVertical: 15, paddingHorizontal: 15, height: 50, }}>
-                <TouchableOpacity style={{}} onPress={() => {
-                    navigation.goBack()
-                }}>
-                    <Text style={{ color: 'white' }}>Close</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.mainContainer}>
-                <View style={styles.containerImg}>
-                    <Image source={{ uri: selectedfood.Img }} style={styles.cardimage} />
-                </View>
+      <TouchableOpacity
+        onPress={() => ChangeUnit(number)}
+        style={styles.caculateBtn}>
+        <Icon Size={20} name={IconName} color="#000" />
+      </TouchableOpacity>
+    );
+  };
+  const CustomSize = ({iselected}) => {
+    return (
+      <View
+        style={[
+          styles.sizeBox,
+          {backgroundColor: iselected ? '#f58d1d' : '#C0C0C0'},
+        ]}>
+        <Text
+          style={{
+            color: '#121223',
+            fontSize: 16,
+          }}>
+          {'10”'}
+        </Text>
+      </View>
+    );
+  };
+  return (
+    <View style={styles.container}>
+      <ImageBackground
+        resizeMode="stretch"
+        style={styles.backgroundImg}
+        source={{uri: selectedfood.Img}}>
+        <View style={styles.header}>
+          <Text
+            onPress={() => navigation.goBack()}
+            style={{
+              color: 'white',
+              fontSize: 18,
+            }}>
+            Close
+          </Text>
+        </View>
+      </ImageBackground>
+      <Text
+        style={{
+          color: '#181c2e',
+          fontSize: 20,
+          fontWeight: 'bold',
+          marginBottom: 7,
+          marginLeft: 25,
+        }}>
+        {selectedfood.nameFood}
+      </Text>
+      <View style={styles.micheline}>
+        <Icon name="favorite" size={24} color="#FFAB6D" />
+        <Text
+          style={{
+            marginLeft: 12,
+            color: '#181c2e',
+            fontSize: 15,
+            flex: 1,
+          }}>
+          Micheline
+        </Text>
+      </View>
+      <View style={styles.starTimeBox}>
+        <Icon name="star" size={24} color="#FFAB6D" />
+        <Text
+          style={{
+            color: '#181c2e',
+            fontSize: 16,
+            fontWeight: 'bold',
+            marginLeft: 10,
+            marginRight: 37,
+          }}>
+          {'4.7'}
+        </Text>
+        <Icon name="local-shipping" size={24} color="#FFAB6D" />
+        <Text
+          style={{
+            color: '#181c2e',
+            fontSize: 16,
+            fontWeight: 'bold',
+            marginLeft: 10,
+            marginRight: 37,
+          }}>
+          {'free'}
+        </Text>
+        <Icon name="alarm" size={24} color="#FFAB6D" />
+        <Text
+          style={{
+            color: '#181c2e',
+            fontSize: 16,
+            marginLeft: 10,
+            marginRight: 37,
+          }}>
+          {'20 min'}
+        </Text>
+      </View>
+      <Space Size={25} />
+      <Text style={styles.description}>
+        "Phở, a Vietnamese noodle soup, delights with aromatic broth, rice
+        noodles, and tender meats, creating a harmonious, flavorful culinary
+        experience."
+      </Text>
+      <View style={styles.sizeContainer}>
+        <Text
+          style={{
+            color: '#a0a5ba',
+            fontSize: 20,
+            marginRight: 16,
+          }}>
+          Size:
+        </Text>
+        <CustomSize />
+        <CustomSize iselected={true} />
+        <CustomSize />
+      </View>
+      <TouchableOpacity
+        onPress={() => navigation.navigate('cart')}
+        style={{position: 'absolute', bottom: 450, right: 5}}>
+        <Image
+          style={{
+            width: 50,
+            height: 50,
+          }}
+          source={require('../assests/images/Cart.png')}
+        />
+      </TouchableOpacity>
+      <View style={styles.footer}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginTop: 20,
+          }}>
+          <Text
+            style={{
+              color: '#181c2e',
+              fontSize: 20,
+              marginRight: 4,
+              flex: 1,
+            }}>
+            {selectedfood.price}D
+          </Text>
 
-                <View style={styles.foodContainer}>
-                    <View style={styles.container}>
-                        <Text style={styles.foodname}>{selectedfood.nameFood}</Text>
-                        <Text style={styles.foodprice}>{selectedfood.price} Đ</Text>
-                    </View>
+          <View style={styles.caculateBox}>
+            <Button IconName={'add'} isPluss={true} />
+            <Text style={{fontSize: 13, borderBottomWidth: 1}}>{unit}</Text>
+            <Button IconName={'remove'} isPluss={false} />
+          </View>
+        </View>
+        <Space Size={20} />
+      </View>
+    </View>
+  );
+};
 
-                    <View style={styles.desContainer}>
-                        <Text style={styles.About}>About food</Text>
-                        <Text style={styles.description}>Best Food that is availble in our country</Text>
-
-
-                    </View>
-
-                    <View style={styles.containerFormAdd}>
-                        <Text style={styles.Quantity}>Quantity</Text>
-
-                        <View style={styles.containerQuantityCuont}>
-                            <Text style={styles.minusText} onPress={() => {
-                                unit > 0 && ChangeUnit(unit - 1)
-                            }}>-</Text>
-                            <Text style={styles.resultTextInput}>{unit}</Text>
-                            <Text style={styles.plusText} onPress={() => {
-                                ChangeUnit(unit + 1)
-                            }}>+</Text>
-                        </View>
-
-                    </View>
-
-
-                </View>
-                <CustomButton
-                    label={"Add to Cart"}
-                    backgroundColor={"#FF3F00"}
-                    onPress={() => {
-                        if (unit > 0) {
-                            selectedfood.unit = unit
-                            dispatch(updateCart(selectedfood))
-
-                        } else {
-                            return
-                        }
-                    }}
-                />
-
-
-            </View>
-
-
-        </ScrollView>
-    )
-}
-
-export default FoodDetailScreen
+export default FoodDetailScreen;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#ebebeb',
-        width: '100%',
-        height: '100%'
+  container: {
+    flex: 1,
+    borderRadius: 30,
+  },
+  backgroundImg: {
+    flexDirection: 'row',
+    borderRadius: 30,
+    flex: 0.7,
+    backgroundColor: 'red',
+    marginBottom: 28,
+  },
+  header: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
 
+    paddingHorizontal: 15,
+    height: 55 * Setheight,
+    width: '100%',
+    justifyContent: 'center',
+  },
+  micheline: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    marginHorizontal: 24,
+  },
+  starTimeBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 25,
+  },
+  description: {
+    fontSize: 14,
+    marginBottom: 29,
+    marginHorizontal: 24,
+    width: '87%',
+  },
+  sizeContainer: {
+    flexDirection: 'row',
+    marginHorizontal: 24,
+    alignItems: 'center',
+  },
+  sizeBox: {
+    width: 48,
+    alignItems: 'center',
+    borderRadius: 110,
+    paddingVertical: 18,
+    marginRight: 10,
+  },
+  caculateBox: {
+    width: 125,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: Colors.FABEBOOK_BLUE,
+    borderRadius: 50,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    shadowColor: '#00000008',
+    shadowOpacity: 0.03999999910593033,
+    shadowOffset: {
+      width: 0,
+      height: 12,
     },
-    mainContainer: {
-        backgroundColor: '#ebebeb'
-    },
-    containerImg: {
-        width: '100%',
-        height: 220,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-
-    cardimage: {
-        width: '100%',
-        height: '100%',
-
-    },
-    foodContainer: {
-        width: '100%',
-        padding: 20,
-        position: 'relative',
-        top: -30,
-        backgroundColor: '#ebebeb',
-    },
-    containerIn2_s1: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 10,
-        paddingHorizontal: 10
-    },
-    foodname: {
-        fontSize: 25,
-        fontWeight: '600',
-        width: 220,
-        marginRight: 10
-    },
-    foodprice: {
-        fontSize: 26,
-        fontWeight: '600',
-    },
-    desContainer: {
-        backgroundColor: 'white',
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        borderRadius: 20,
-    },
-    About: {
-        fontSize: 18,
-        fontWeight: '600',
-    },
-    description: {
-        paddingTop: 10,
-        fontSize: 15,
-    },
-    containerIn2_s2_veg: {
-        backgroundColor: 'green',
-        color: 'white',
-        paddingHorizontal: 20,
-        paddingVertical: 5,
-        borderRadius: 10,
-        width: 70,
-        alignItems: 'center',
-        marginTop: 5
-    },
-
-    containerFormAdd: {
-        width: '90%',
-        alignSelf: 'center',
-        alignItems: 'center'
-    },
-
-    Quantity: {
-        color: 'grey',
-        fontSize: 18,
-        fontWeight: '600'
-    },
-    containerQuantityCuont: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        margin: 10,
-    },
-    minusText: {
-        backgroundColor: '#FF3F00',
-
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 50,
-        elevation: 2,
-        padding: 10,
-        color: 'white',
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    resultTextInput: {
-        backgroundColor: 'white',
-        alignItems: 'center',
-        justifyContent: 'center',
-        elevation: 2,
-        padding: 10,
-        width: 50,
-        borderRadius: 20,
-        marginHorizontal: 10,
-        fontSize: 20,
-        textAlign: 'center',
-    },
-    plusText: {
-        backgroundColor: '#FF3F00',
-
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 50,
-        elevation: 2,
-        padding: 10,
-        color: 'white',
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-
-
-})
+    shadowRadius: 20,
+    elevation: 20,
+  },
+  caculateBtn: {
+    borderWidth: 1,
+    elevation: 2,
+    width: 24,
+    height: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    alignSelf: 'center',
+    width: '100%',
+    backgroundColor: '#DCA8FF',
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingHorizontal: 24,
+    paddingBottom: 20,
+  },
+});

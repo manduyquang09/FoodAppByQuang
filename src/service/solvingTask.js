@@ -1,17 +1,63 @@
-import { collection, getDocs } from "@firebase/firestore"
-import { fireStoreDatabase } from "../firebase"
-import { useSelector } from "react-redux"
+import {Timestamp, addDoc, collection} from '@firebase/firestore';
+import {fireStoreDatabase} from '../firebase';
 
-export const getFoodByRes = (restaurantId) => {
-    console.log("res Id :  " + restaurantId)
-    const { restaurantList, foodList } = useSelector(state => state.supply);
-    const getMenu = () => {
-        const menu = foodList.filter((food) => food.restaurantId === restaurantId)
-
-        return menu.length > 0 ? menu : []
-
+export const getFoodByRes = (restaurantId, foodList) => {
+  if (foodList && foodList.length > 0) {
+    const menu = foodList.filter(food => food.restaurantId === restaurantId);
+    return menu.length > 0 ? menu : [];
+  }
+};
+export const getFoodByCate = (categoryId, foodList) => {
+  const foodsByCategory = foodList.filter(
+    food => food.categoryId === categoryId,
+  );
+  return foodsByCategory.length > 0 ? foodsByCategory : [];
+};
+export const getFinalAmount = cart => {
+  const totalPrice = cart.reduce(
+    (accumulator, food) => accumulator + food.unit * food.price,
+    0,
+  );
+  return totalPrice;
+};
+export const sendingOrder = async props => {
+  const orderList = props;
+  // const {userData, login} = useSelector(state => state.user);
+  console.log(Timestamp.fromDate(new Date()));
+  try {
+    for (const order of orderList) {
+      const restaurantId = Object.keys(order)[0];
+      const orderRef = await addDoc(collection(fireStoreDatabase, 'orders'), {
+        userId: 1,
+        restaurantId: restaurantId,
+        totalPrice: await getFinalAmount(Object.values(order)[0]),
+        order_date: Timestamp.fromDate(new Date()),
+      });
+      const foodList = Object.values(order)[0];
+      for (const food of foodList) {
+        await addDoc(collection(fireStoreDatabase, 'orderList'), {
+          orderId: orderRef.id,
+          userId: 1,
+          foodId: food.foodId,
+          total_unit: food.unit,
+          order_date: Timestamp.fromDate(new Date()),
+        });
+      }
     }
+    return {success: true, message: 'Chúc mừng bạn đã đặt hàng thành công!'};
+  } catch (error) {
+    return {success: false, message: JSON.stringify(error)};
+  }
+};
 
-    return { getMenu }
-
-}
+export const renderTopFood = ({foodIdList, foodList}) => {
+  const topFoodList = [];
+  for (let foodId of foodIdList) {
+    const foodID = foodList.find(food => food.foodId === foodId);
+    if (foodID) {
+      topFoodList.push(foodID);
+    }
+  }
+  console.log('found :  ' + JSON.stringify(topFoodList));
+  return topFoodList && topFoodList;
+};

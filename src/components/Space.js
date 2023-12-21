@@ -1,14 +1,8 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import {View, Text} from 'react-native';
+import React from 'react';
 
-const Space = ({ Size }) => {
-    return (
-        <View
-            style={{ height: Size }}
-        >
+const Space = ({Size, width, ...extraProps}) => {
+  return <View style={{height: Size, width: width, ...extraProps}}></View>;
+};
 
-        </View>
-    )
-}
-
-export default Space
+export default Space;

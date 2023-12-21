@@ -1,224 +1,143 @@
 import {
-    View,
-    Text,
-    Image,
-    TouchableOpacity,
-    StyleSheet,
-    TextInput,
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import store from './../redux/store';
-import { Colors } from '../contants';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateCart } from '../redux/action/AuthAction';
+import React, {useEffect, useState} from 'react';
+import {useDispatch} from 'react-redux';
+import {updateCart} from '../redux/action/authAction';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const FoodItem = ({ selectedfood, onPress, cart }) => {
-
-    const [unit, setUnit] = useState(0)
-    const dispatch = useDispatch()
-    const ChangeUnit = (number) => {
-        const updatedFood = { ...selectedfood, unit: number };
-        setUnit(number)
-        selectedfood.unit = number
-        dispatch(updateCart(updatedFood))
+const FoodItem = ({selectedfood, onPress, cart, isRemove}) => {
+  const [unit, setUnit] = useState(selectedfood.unit);
+  const dispatch = useDispatch();
+  const ChangeUnit = number => {
+    const updatedFood = {...selectedfood, unit: number};
+    selectedfood.unit = number;
+    setUnit(number);
+    dispatch(updateCart(updatedFood));
+  };
+  const Button = ({IconName, isPluss}) => {
+    let number = 0;
+    if (isPluss) {
+      number = selectedfood.unit + 1;
+    } else if (!isPluss && selectedfood.unit > 0) {
+      number = selectedfood.unit - 1;
     }
-    useEffect(() => {
 
-        if (cart.length > 0) {
-            foodUnit = cart.find((food) => food.foodId == selectedfood.foodId)
-            if (foodUnit) {
-                selectedfood.unit = foodUnit.unit
-            }
-        } else {
-            selectedfood.unit = 0
-        }
-    }, [])
     return (
-        <View
-            style={{
-                width: '100%',
-                height: 100,
-                flexDirection: 'row',
-                borderColor: Colors.DEFAULT_GREY,
-                borderWidth: 1,
-                backgroundColor: 'rgba(241, 236, 239, 0.8)',
-                marginTop: 5
-            }}>
-            <Image
-                style={{
-                    width: 100,
-                    height: 100,
-                }}
-                source={{ uri: selectedfood.Img }}
-            />
-
-            <View
-                style={{
-                    flex: 1,
-                    justifyContent: 'space-evenly',
-                    padding: 5,
-                }}>
-                <Text
-                    style={{
-                        fontSize: 17.5,
-                        fontWeight: '600',
-                    }}>
-                    {selectedfood.name}
-                </Text>
-                <Text
-                    style={{
-                        fontSize: 14,
-                        fontWeight: '400',
-                    }}>
-                    Breakfast
-                </Text>
-                <Text
-                    style={{
-                        fontSize: 13,
-                        width: '95%',
-                    }}>
-                    Phở is a very popular food in Vietnam
-                </Text>
-            </View>
-            <View style={styles.containerQuantityCuont}>
-                {selectedfood.unit === 0 ? (
-                    <>
-                        <TouchableOpacity
-                            onPress={() => { ChangeUnit(1) }}
-                            style={styles.AddCart}>
-                            <Text
-                                style={{
-                                    fontSize: 16,
-                                    color: Colors.DEFAULT_WHITE,
-                                    padding: 5
-                                }}>
-                                Add to cart
-                            </Text>
-                        </TouchableOpacity>
-                    </>
-                ) : (
-                    <>
-
-                        <Text style={styles.caculateBtn} onPress={() => {
-                            ChangeUnit(selectedfood.unit - 1)
-                        }}>
-                            -
-                        </Text>
-                        <Text style={styles.resultTextInput} >{selectedfood.unit}</Text>
-                        <Text style={styles.caculateBtn} onPress={() => {
-                            ChangeUnit(selectedfood.unit + 1)
-                        }}>
-                            +
-                        </Text>
-
-
-
-                    </>
-                )}
-            </View>
-        </View>
-
+      <TouchableOpacity
+        onPress={() => {
+          ChangeUnit(number);
+        }}
+        style={styles.caculateBtn}>
+        <Icon Size={20} name={IconName} color="#000" />
+      </TouchableOpacity>
     );
+  };
+
+  return (
+    <TouchableOpacity style={styles.container} onPress={onPress}>
+      <Image style={styles.image} source={{uri: selectedfood.Img}} />
+      <View style={styles.contentItem}>
+        <Text
+          style={{
+            color: '#000',
+            fontSize: 14,
+            fontStyle: 'normal',
+            fontWeight: '400',
+          }}>
+          {selectedfood.nameFood}
+        </Text>
+        <Text style={{color: '#000', fontSize: 13}}>
+          Qty: {selectedfood.unit}
+        </Text>
+        <Text style={{color: '#000', fontSize: 13, fontWeight: 500}}>
+          ${selectedfood.price}
+        </Text>
+      </View>
+      {!isRemove ? (
+        <>
+          <View style={styles.caculateBox}>
+            <Button IconName={'add'} isPluss={true} />
+            <Text style={{fontSize: 13, borderBottomWidth: 1}}>
+              {selectedfood.unit}
+            </Text>
+            <Button IconName={'remove'} isPluss={false} />
+          </View>
+        </>
+      ) : (
+        <>
+          <TouchableOpacity
+            style={styles.delBtn}
+            onPress={() => {
+              if (cart.length > 0) {
+                const delFood = {
+                  ...selectedfood,
+                  unit: 0,
+                };
+
+                dispatch(updateCart(delFood));
+              } else {
+                return;
+              }
+            }}>
+            <Icon name={'delete'} size={35} color={'green'} />
+          </TouchableOpacity>
+        </>
+      )}
+    </TouchableOpacity>
+  );
 };
 
 export default FoodItem;
-
 const styles = StyleSheet.create({
-    resultTextInput: {
-        backgroundColor: 'white',
-        alignItems: 'center',
-        justifyContent: 'center',
-        elevation: 2,
-        padding: 10,
-        width: 50,
-        borderRadius: 20,
-        marginHorizontal: 10,
-        fontSize: 20,
-        textAlign: 'center',
-    },
-    caculateBtn: {
-        backgroundColor: '#FF3F00',
+  container: {
+    width: '100%',
+    height: 81,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FED718',
+    borderRadius: 10,
+    alignSelf: 'center',
+    elevation: 3,
+  },
+  image: {
+    width: 67,
+    height: 59,
+    borderRadius: 5,
+    resizeMode: 'cover',
 
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 50,
-        elevation: 2,
-        padding: 10,
-        color: 'white',
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    containerQuantityCuont: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 3
-    },
-    AddCart: {
-
-        backgroundColor: '#FF3F00',
-
-        borderRadius: 20,
-        elevation: 2,
-        padding: 5,
-    },
+    marginLeft: 12,
+  },
+  contentItem: {
+    marginLeft: 11,
+    flex: 1,
+    padding: 3,
+  },
+  caculateBox: {
+    backgroundColor: 'blue',
+    width: 85,
+    height: 31,
+    borderRadius: 5,
+    backgroundColor: '#FFF',
+    flexDirection: 'row',
+    marginRight: 20,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  caculateBtn: {
+    borderWidth: 1,
+    elevation: 2,
+    width: 21,
+    height: 21,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  delBtn: {
+    padding: 10,
+  },
 });
-{
-    /* <View
-  style={{
-      flexDirection: 'row',
-      elevation: 2,
-      borderWidth: 1,
-      borderColor: 'white',
-      alignItems: 'center',
-      marginVertical: 15
-  }}
-  >
-  <Image
-      style={{
-          width: 100,
-          height: 90
-      }}
-      source={require("../assests/images/Burger.jpg")}
-  />
-  <View
-      style={{
-          flexDirection: 'column',
-          justifyContent: 'space-evenly',
-          padding: 10,
-          backgroundColor: 'blue'
-      }}
-  >
-      <Text
-          style={{
-              fontSize: 17.5,
-              fontWeight: "600"
-          }}
-      >
-          {food.name}
-      </Text>
-      <Text
-          style={{
-              fontSize: 14,
-              fontWeight: "400",
-          }}
-      >
-          Breakfast
-      </Text>
-      <Text
-          style={{
-              fontSize: 13,
-              width: "80%"
-          }}
-      >
-          Phở is a very popular type of food in Vietnam
-      </Text>
-  </View>
-  <View
-      style={{ backgroundColor: 'red' }}
-  >
-      <Text
-          style={{ color: 'red', fontSize: 23 }}
-      >Price 123</Text>
-  </View>
-  </View> */
-}

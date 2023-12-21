@@ -1,138 +1,274 @@
 import {
-    View,
-    ScrollView,
-    Text,
-    StatusBar,
-    StyleSheet,
-    TextInput,
-    FlatList,
-    SectionList,
-    TouchableOpacity,
+  View,
+  ScrollView,
+  Text,
+  StatusBar,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Image,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { Colors } from '../contants/index';
+import React, {useEffect, useState} from 'react';
+import {Colors} from '../contants/index';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Space from '../components/Space';
-import InputField from '../components/InputField';
-import { SearchBar } from 'react-native-screens';
-import Categories from '../components/Categories';
-import RestaurantCard from '../components/RestaurantCard';
-import { fireStoreDatabase } from '../firebase';
-import { getAllFood, getAllRestaurant } from '../redux/action/supplyAction';
-import { useDispatch, useSelector } from 'react-redux';
-import FoodCard from '../components/FoodCard';
-const HomeScreen = ({ navigation }) => {
-    const dispatch = useDispatch();
-    const { restaurantList, foodList } = useSelector(state => state.supply);
+import {Space, Categories, RestaurantCard, FoodCard} from '../components/index';
+import {
+  getAllCategory,
+  getAllFood,
+  getAllRestaurant,
+  getTopFood,
+} from '../redux/action/supplyAction';
+import {useDispatch, useSelector} from 'react-redux';
+import {renderTopFood} from '../service/solvingTask';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-    useEffect(() => {
-        dispatch(getAllRestaurant());
-        dispatch(getAllFood());
-
-    }, []);
-
-
+const HomeScreen = ({navigation}) => {
+  const dispatch = useDispatch();
+  const {restaurantList, foodList, categoryList, foodIdList} = useSelector(
+    state => state.supply,
+  );
+  const {userData, login} = useSelector(state => state.user);
+  const [user, setUser] = useState('');
+  useEffect(async () => {
+    dispatch(getAllRestaurant());
+    dispatch(getAllCategory());
+    dispatch(getAllFood());
+    dispatch(getTopFood());
+  }, []);
+  const CustomeSearch = () => {
     return (
-        <View style={styles.container}>
-            <StatusBar backgroundColor={'#FF3F00'} translucent />
-            <Space Size={24} />
-            <View style={styles.header}>
-                <View style={styles.Location}>
-                    <Icon name="location-on" size={28} color={Colors.DEFAULT_BLACK} />
-
-                    <Text
-                        style={{
-                            marginLeft: 5,
-                            fontSize: 15,
-                            lineHeight: 13 * 1.4,
-                            color: Colors.DEFAULT_BLACK,
-                            fontWeight: '700',
-                        }}>
-                        WelCome
-                    </Text>
-                </View>
-            </View>
-
-            <View
-                style={{
-                    backgroundColor: Colors.DEFAULT_WHITE,
-                    height: 45,
-                    marginTop: 20,
-                    elevation: 2,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    paddingHorizontal: 10,
-                    borderRadius: 20,
-                    marginVertical: 10,
-                    marginHorizontal: 5,
-                    width: '90%',
-                    alignSelf: 'center',
-                }}>
-                <View
-                    style={{
-                        alignItems: 'center',
-                        flexDirection: 'row',
-                    }}>
-                    <Icon name="search" size={25} color={'#FF3F00'} />
-                    <TextInput
-                        placeholder="Search"
-                        style={{
-                            fontSize: 15,
-                            color: 'black',
-                        }}
-                    />
-                </View>
-                <Icon name="tune" size={23} color={Colors.GOOGLE_BLUE} />
-            </View>
-            <ScrollView>
-                <Categories />
-                <Text style={styles.title}>Hot Restaurant</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    {restaurantList.length > 0
-                        ? restaurantList.map((item, index) => (
-                            <RestaurantCard key={index} Restaurant={item}
-
-                                onPress={() => navigation.navigate("Restaurant", { restaurant: item })}
-                            />
-                        ))
-                        : null}
-                </ScrollView>
-                <Text style={styles.title}>Hot Food</Text>
-                <FlatList
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    data={foodList}
-                    renderItem={({ item }) => <FoodCard food={item}
-                        onPress={() => navigation.navigate("foodDetail", { food: item })}
-                    />}
-                />
-            </ScrollView>
-
+      <TouchableOpacity
+        style={styles.searchContainer}
+        onPress={() => navigation.navigate('search', foodList)}>
+        <View
+          style={{
+            alignItems: 'center',
+            flexDirection: 'row',
+          }}>
+          <Icon name="search" size={25} color={'#FF3F00'} />
+          <Text
+            placeholder="See all food"
+            style={{
+              marginLeft: 10,
+              fontSize: 17,
+              color: 'black',
+            }}>
+            See all food here
+          </Text>
         </View>
+        <Icon name="tune" size={23} color={Colors.GOOGLE_BLUE} />
+      </TouchableOpacity>
     );
+  };
+  return (
+    <ScrollView style={styles.container}>
+      <StatusBar translucent barStyle={'dark-content'} />
+      <Space Size={StatusBar.currentHeight} />
+      <View style={styles.header}>
+        <Image
+          style={styles.muImage}
+          source={require('../assests/images/Manu.png')}
+        />
+        <View
+          style={{
+            alignSelf: 'flex-start',
+            alignItems: 'flex-start',
+            marginRight: 10,
+          }}>
+          <Text
+            style={{
+              color: '#fc6e2a',
+              fontSize: 15,
+              fontWeight: '500',
+              marginBottom: 3,
+            }}>
+            Deliver to
+          </Text>
+          <Text
+            style={{
+              fontWeight: '400',
+              color: 'gray',
+              fontSize: 15,
+            }}>
+            Cont ty x
+          </Text>
+        </View>
+        <Space flex={1} />
+        <Image
+          style={{width: 30, height: 30}}
+          source={require('../assests/images/LoveIcon.png')}
+        />
+      </View>
+      <Space Size={30} />
+      <Text
+        style={{
+          paddingHorizontal: 24,
+          color: 'black',
+          fontSize: 16,
+          fontWeight: '600',
+        }}>
+        {userData.userName}, Good Afternoon!
+      </Text>
+      <Space Size={10} />
+      <CustomeSearch />
+
+      <View style={styles.CategoryBox}>
+        <Text
+          style={{
+            color: '#000',
+            fontSize: 20,
+            marginRight: 4,
+            flex: 1,
+            fontWeight: '500',
+          }}>
+          All Categories
+        </Text>
+        <Text
+          style={{
+            color: '#FF7F27',
+            fontSize: 18,
+            fontWeight: '600',
+          }}>
+          See All
+        </Text>
+      </View>
+      <Space Size={20} />
+      <FlatList
+        showsHorizontalScrollIndicator={false}
+        ItemSeparatorComponent={() => <Space width={10} />}
+        style={{paddingHorizontal: 15}}
+        horizontal
+        data={categoryList}
+        renderItem={({item}) => (
+          <Categories
+            category={item}
+            foodList={foodList}
+            navigation={navigation}
+            index={Math.random() * 4}
+          />
+        )}
+      />
+      <Space Size={15} />
+      <View style={styles.CategoryBox}>
+        <Text style={{flex: 1, color: '#000', fontSize: 20}}>
+          Open Restaurant
+        </Text>
+        <Text
+          style={{
+            color: '#FF7F27',
+            fontSize: 18,
+            fontWeight: '600',
+          }}>
+          See All
+        </Text>
+      </View>
+      <Space Size={10} />
+      <FlatList
+        showsHorizontalScrollIndicator={false}
+        horizontal
+        style={{
+          paddingHorizontal: 15,
+        }}
+        data={restaurantList}
+        ItemSeparatorComponent={() => <Space width={10} />}
+        renderItem={({item}) => (
+          <RestaurantCard
+            restaurant={item}
+            onPress={() =>
+              navigation.navigate('Restaurant', {
+                restaurant: item,
+                foodList: foodList,
+              })
+            }
+          />
+        )}
+      />
+      <Space Size={15} />
+      <View style={styles.CategoryBox}>
+        <Text style={{flex: 1, color: '#000', fontSize: 20}}>
+          Top 5 food for you
+        </Text>
+        <Text
+          onPress={() => navigation.navigate('search', foodList)}
+          style={{
+            color: '#FF7F27',
+            fontSize: 18,
+            fontWeight: '600',
+          }}>
+          See All
+        </Text>
+      </View>
+      <FlatList
+        ListHeaderComponent={() => <Space Size={10} />}
+        ItemSeparatorComponent={() => <Space width={10} />}
+        style={{
+          paddingHorizontal: 15,
+        }}
+        numColumns={2}
+        data={renderTopFood({foodList, foodIdList})}
+        renderItem={({item}) => (
+          <FoodCard
+            onPress={() =>
+              navigation.navigate('foodDetail', {
+                selectedfood: item,
+              })
+            }
+            item={item}
+          />
+        )}
+      />
+    </ScrollView>
+  );
 };
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    header: {
-        paddingHorizontal: 16,
-        paddingVertical: 10,
-        backgroundColor: Colors.DEFAULT_WHITE,
-        borderBottomWidth: 1,
-        borderColor: 'grey',
-    },
-    Location: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    title: {
-        marginLeft: 10,
-        fontSize: 19,
-        lineHeight: 40,
-        color: 'gray',
-        fontWeight: '800',
-    },
+  container: {
+    borderRadius: 20,
+    paddingTop: 20,
+    paddingBottom: 19,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+  },
+  muImage: {
+    backgroundColor: 'gray',
+    borderRadius: 100,
+    marginRight: 14,
+    width: 45,
+    height: 45,
+  },
+  CategoryBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+  },
+  title: {
+    marginLeft: 10,
+    fontSize: 19,
+    lineHeight: 35,
+    color: 'gray',
+    fontWeight: '800',
+  },
+  searchContainer: {
+    backgroundColor: Colors.DEFAULT_WHITE,
+    height: 70,
+    marginTop: 20,
+    elevation: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    borderRadius: 20,
+    marginVertical: 10,
+    width: '92%',
+    alignSelf: 'center',
+    marginBottom: 15,
+  },
+  input: {
+    height: 40,
+    paddingLeft: 10,
+    fontSize: 16,
+  },
 });
 export default HomeScreen;

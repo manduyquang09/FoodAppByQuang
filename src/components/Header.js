@@ -1,49 +1,44 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
-import React from 'react'
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { Colors } from '../contants/index';
-const Header = () => {
-    return (
-        <View
-            style={styles.Container}
-        >
+import {Colors} from '../contants/index';
+import SearchBar from './searchBar';
+import Space from './Space';
+import {Setwidth} from '../ultis/display';
+const Header = ({onPress, title}) => {
+  return (
+    <View style={styles.headerContainer}>
+      <Icon
+        onPress={onPress}
+        name="arrow-back-ios-new"
+        style={{
+          elevation: 3,
 
-            <TouchableOpacity
-
-            >
-                <Icon
-
-                    name="arrow-back-ios"
-                    size={30}
-                    color={Colors.DEFAULT_BLACK}
-
-                /></TouchableOpacity>
-            <Text
-                style={{
-                    color: "black", fontSize: 20
-                    ,
-
-                    fontWeight: 'bold'
-                }}
-            >Register here </Text>
-            <Text>22</Text>
-
-
-        </View>
-    )
-}
+          backgroundColor: 'gray',
+        }}
+        size={30}
+      />
+      <Text
+        style={{
+          fontWeight: 'bold',
+          fontSize: 20,
+          lineHeight: 20 * 2,
+          textAlign: 'center',
+          marginRight: 30 * Setwidth,
+          flex: 1,
+        }}>
+        {title}
+      </Text>
+    </View>
+  );
+};
 const styles = StyleSheet.create({
-    Container: {
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
 
-        paddingHorizontal: 15,
-        paddingVertical: 20,
-        flexDirection: 'row'
-        , justifyContent: "space-between",
-        alignItems: 'center',
-        backgroundColor: Colors.DEFAULT_WHITE
-
-
-
-    }
-})
-export default Header
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+  },
+});
+export default Header;

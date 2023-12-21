@@ -1,84 +1,50 @@
-import {
-    View,
-    Text,
-    StyleSheet,
-    ScrollView,
-    Image,
-    TouchableOpacity,
-} from 'react-native';
-import React from 'react';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {getFoodByCate} from '../service/solvingTask';
 
-const Categories = ({ props }) => {
-    return (
-        <View style={styles.container}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <TouchableOpacity style={[styles.button, { backgroundColor: '#ddfbf3' }]}>
-                    <Image
-                        style={styles.img}
-                        source={require('../assests/images/Pho.jpg')}
-                    />
-                    <Text style={{ marginLeft: 5 }}>Pho</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, { backgroundColor: '#f5e5ff' }]}>
-                    <Image
-                        style={styles.img}
-                        source={require('../assests/images/Pizza.jpg')}
-                    />
-                    <Text style={{ marginLeft: 5 }}>Pizza</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, { backgroundColor: '#e5f1ff' }]}>
-                    <Image
-                        style={styles.img}
-                        source={require('../assests/images/Burger.jpg')}
-                    />
-                    <Text style={{ marginLeft: 5 }}>Burger</Text>
-                </TouchableOpacity>
+const Categories = ({category, foodList, navigation, index}) => {
+  const color = ['#FF91CB', '#FF7F27', '#ddfbf3', '#EE8AF8', '##880015'];
+  const [hexColor, setHexColor] = useState(Math.floor(index));
 
-                <TouchableOpacity style={[styles.button, { backgroundColor: '#ebfde5' }]}>
-                    <Image
-                        style={styles.img}
-                        source={require('../assests/images/Drink.jpg')}
-                    />
-                    <Text style={{ marginLeft: 5 }}>Drink</Text>
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setHexColor(prevcolor => (prevcolor + 1) % 4);
+    }, 550);
 
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, { backgroundColor: '#ebfde5' }]}>
-                    <Image
-                        style={styles.img}
-                        source={require('../assests/images/Drink.jpg')}
-                    />
-                    <Text style={{ marginLeft: 5 }}>Drink</Text>
-
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, { backgroundColor: '#ebfde5' }]}>
-                    <Image
-                        style={styles.img}
-                        source={require('../assests/images/Drink.jpg')}
-                    />
-                    <Text style={{ marginLeft: 5 }}>Drink</Text>
-
-                </TouchableOpacity>
-            </ScrollView>
-        </View>
-    );
+    return () => clearInterval(intervalId);
+  }, []);
+  useEffect(() => {
+    console.log('set by cate : ' + JSON.stringify());
+  }, [category, foodList]);
+  return (
+    <View>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate(
+            'search',
+            getFoodByCate(category.categoryId, foodList),
+          )
+        }
+        style={[styles.button, {backgroundColor: color[hexColor]}]}>
+        <Image style={styles.img} source={{uri: category.Img}} />
+        <Text style={{marginLeft: 5}}>{category.name}</Text>
+      </TouchableOpacity>
+    </View>
+  );
 };
 const styles = StyleSheet.create({
-    container: {
-        width: '100%',
-        borderRadius: '10',
-    },
-    button: {
-        flexDirection: 'row',
-        marginLeft: 10,
-        marginBottom: 15,
-        padding: 13,
-        borderRadius: 18,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    img: {
-        width: 25,
-        height: 25,
-    },
+  button: {
+    elevation: 3,
+    flexDirection: 'row',
+    marginBottom: 15,
+    padding: 13,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  img: {
+    width: 25,
+    height: 25,
+  },
 });
 export default Categories;
