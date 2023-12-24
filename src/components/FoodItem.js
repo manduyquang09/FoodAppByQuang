@@ -34,36 +34,40 @@ const FoodItem = ({selectedfood, onPress, cart, isRemove}) => {
           ChangeUnit(number);
         }}
         style={styles.caculateBtn}>
-        <Icon Size={20} name={IconName} color="#000" />
+        <Icon size={20} name={IconName} color="#000" />
       </TouchableOpacity>
     );
   };
 
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
-      <Image style={styles.image} source={{uri: selectedfood.Img}} />
-      <View style={styles.contentItem}>
-        <Text
-          style={{
-            color: '#000',
-            fontSize: 14,
-            fontStyle: 'normal',
-            fontWeight: '400',
-          }}>
-          {selectedfood.nameFood}
-        </Text>
-        <Text style={{color: '#000', fontSize: 13}}>
-          Qty: {selectedfood.unit}
-        </Text>
-        <Text style={{color: '#000', fontSize: 13, fontWeight: 500}}>
-          ${selectedfood.price}
-        </Text>
-      </View>
+    <View style={styles.container}>
+      <TouchableOpacity
+        onPress={onPress}
+        style={{flex: 1, flexDirection: 'row'}}>
+        <Image style={styles.image} source={{uri: selectedfood.Img}} />
+        <View style={styles.contentItem}>
+          <Text
+            style={{
+              color: '#000',
+              fontSize: 14,
+              fontStyle: 'normal',
+              fontWeight: '400',
+            }}>
+            {selectedfood.nameFood}
+          </Text>
+          <Text style={{color: '#000', fontSize: 13}}>
+            Qty: {selectedfood.unit}
+          </Text>
+          <Text style={{color: '#000', fontSize: 13, fontWeight: 500}}>
+            ${selectedfood.price}
+          </Text>
+        </View>
+      </TouchableOpacity>
       {!isRemove ? (
         <>
           <View style={styles.caculateBox}>
             <Button IconName={'add'} isPluss={true} />
-            <Text style={{fontSize: 13, borderBottomWidth: 1}}>
+            <Text style={{fontSize: 16, borderBottomWidth: 1}}>
               {selectedfood.unit}
             </Text>
             <Button IconName={'remove'} isPluss={false} />
@@ -89,7 +93,7 @@ const FoodItem = ({selectedfood, onPress, cart, isRemove}) => {
           </TouchableOpacity>
         </>
       )}
-    </TouchableOpacity>
+    </View>
   );
 };
 
@@ -103,7 +107,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FED718',
     borderRadius: 10,
     alignSelf: 'center',
-    elevation: 3,
+
+    elevation: 11,
   },
   image: {
     width: 67,
@@ -119,21 +124,25 @@ const styles = StyleSheet.create({
     padding: 3,
   },
   caculateBox: {
-    backgroundColor: 'blue',
-    width: 85,
-    height: 31,
+    width: 120,
+    height: 50,
     borderRadius: 5,
-    backgroundColor: '#FFF',
+    backgroundColor: '#ffffff',
+    elevation: 18,
     flexDirection: 'row',
     marginRight: 20,
+
     alignItems: 'center',
     justifyContent: 'space-around',
   },
   caculateBtn: {
-    borderWidth: 1,
-    elevation: 2,
-    width: 21,
-    height: 21,
+    elevation: 5,
+    backgroundColor: '#F4900C',
+    //borderWidth: 1,
+    elevation: 100,
+    width: 31,
+    height: 31,
+
     alignItems: 'center',
     justifyContent: 'center',
   },

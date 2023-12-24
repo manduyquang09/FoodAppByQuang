@@ -12,14 +12,11 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Space from '../components/Space';
 import {useDispatch, useSelector} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {SimpleToast} from 'react-native-simple-toast';
-import {useNavigation} from '@react-navigation/native';
 import {logOut} from '../redux/action/authAction';
-const UserProfile = () => {
+
+const UserProfile = props => {
   const dispatch = useDispatch();
-  const navigation = useNavigation();
   const {userData, login} = useSelector(state => state.user);
-  console.log(userData.userName);
   const CustomSetingBar = ({iconName, color, title, onPress}) => {
     return (
       <TouchableOpacity
@@ -91,14 +88,7 @@ const UserProfile = () => {
         iconName={'logout'}
         title={'Log outs'}
         onPress={() => {
-          AsyncStorage.removeItem('userData')
-            .then(() => {
-              SimpleToast.show('log out');
-              dispatch(logOut());
-            })
-            .catch(err => {
-              SimpleToast.show('Error logging out');
-            });
+          dispatch(logOut());
         }}
       />
     </ScrollView>

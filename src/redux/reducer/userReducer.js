@@ -2,7 +2,6 @@ const initialState = {
   userData: {},
   login: false,
   cart: [],
-  clearToken: '',
 };
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
@@ -46,12 +45,11 @@ const userReducer = (state = initialState, action) => {
       };
     case 'LOG_OUT':
       return {
-        ...state,
+        ...initialState,
       };
     default:
       return {
         ...state,
-        clearToken: null,
       };
   }
 };

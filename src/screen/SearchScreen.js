@@ -19,9 +19,6 @@ const Searchscreen = ({navigation, route}) => {
 
         return food;
       });
-      for (let i of updatedMenu) {
-        console.log('update:  ' + JSON.stringify(i.unit));
-      }
       setMenu(updatedMenu);
     } else {
       const updatedMenu = foodList.map(food => ({...food, unit: 0}));
@@ -33,6 +30,7 @@ const Searchscreen = ({navigation, route}) => {
     reLoadMenu();
   }, [cart]);
   const handleSearch = text => {
+    console.log(text);
     if (text.trim() === '') {
       reLoadMenu();
     } else {

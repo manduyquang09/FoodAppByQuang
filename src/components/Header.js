@@ -4,7 +4,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Colors} from '../contants/index';
 import SearchBar from './searchBar';
 import Space from './Space';
-import {Setwidth} from '../ultis/display';
 const Header = ({onPress, title}) => {
   return (
     <View style={styles.headerContainer}>
@@ -22,9 +21,8 @@ const Header = ({onPress, title}) => {
         style={{
           fontWeight: 'bold',
           fontSize: 20,
-          lineHeight: 20 * 2,
+          lineHeight: 40,
           textAlign: 'center',
-          marginRight: 30 * Setwidth,
           flex: 1,
         }}>
         {title}
@@ -36,7 +34,6 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-
     paddingHorizontal: 20,
     paddingVertical: 15,
   },

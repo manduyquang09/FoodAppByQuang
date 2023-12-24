@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
   StatusBar,
-  Alert,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
@@ -15,6 +14,7 @@ import {useNavigation} from '@react-navigation/native';
 import {getFinalAmount, sendingOrder} from '../service/solvingTask';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {DelCartItem} from '../redux/action/authAction';
+import {Alert} from 'antd';
 import {
   PaymentCard,
   Header,
@@ -23,9 +23,12 @@ import {
   FoodItem,
 } from '../components/index';
 import {Colors} from '../contants';
-import {Setheight, Setwidth} from '../ultis/display';
+import {windowHeight, windowWidth} from '../ultis/display';
 const CartScreen = ({navigation}) => {
-  const cart = useSelector(state => state.user.cart);
+  console.log(windowHeight);
+  console.log(windowWidth);
+
+  const {userData, cart} = useSelector(state => state.user);
   const {restaurantList, foodList} = useSelector(state => state.supply);
   const [cartbyRestaurant, setCartbyRestaurant] = useState([]);
   const dispatch = useDispatch();
@@ -65,13 +68,16 @@ const CartScreen = ({navigation}) => {
       setCartbyRestaurant([]);
     }
   }, [cart]);
-  const orderClick = async () => {
-    await sendingOrder(cartbyRestaurant)
+  const orderClick = () => {
+    console.log(userData);
+    sendingOrder(cartbyRestaurant, userData)
       .then(res => {
-        Alert.alert(res.message);
+        <Alert message={res.message} type="success" />;
         dispatch(DelCartItem());
       })
-      .catch(err => {});
+      .catch(err => {
+        <Alert message={err.message} type="error" />;
+      });
   };
   return (
     <View style={styles.container}>
@@ -103,7 +109,7 @@ const CartScreen = ({navigation}) => {
                       restaurant =>
                         restaurant.restaurantId === Object.keys(item)[0],
                     ).name
-                  }{' '}
+                  }
                 </Text>
                 <FlatList
                   style={styles.resCard}
@@ -163,7 +169,7 @@ const CartScreen = ({navigation}) => {
             </View>
             <View style={styles.itemTotal}>
               <Text style={styles.totalText}>Discount</Text>
-              <Text style={styles.totalAmount}>10%</Text>
+              <Text style={styles.totalAmount}>0%</Text>
             </View>
             <View style={styles.itemTotal}>
               <Text style={[styles.totalText, {color: Colors.GOOGLE_BLUE}]}>
@@ -225,7 +231,7 @@ const CartScreen = ({navigation}) => {
             <CustomButton
               label={'Go home'}
               backgroundColor={'#143e2f'}
-              onPress={() => navigation.navigate('Home')}
+              onPress={() => navigation.navigate('home')}
             />
           </View>
         </>
@@ -242,7 +248,7 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    height: '99%',
+    height: '90%',
     width: 10,
     margin: 6,
     borderRadius: 8,
@@ -253,8 +259,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   emptyImg: {
-    height: 150 * Setheight,
-    width: 150 * Setwidth,
+    height: windowHeight * 0.2,
+    width: windowWidth * 0.5,
   },
   resCard: {
     padding: 10,

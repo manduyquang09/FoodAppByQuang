@@ -39,7 +39,7 @@ const TabStack = () => {
       screenOptions={({route}) => ({
         tabBarStyle: styles.tabBar,
         tabBarIcon: ({color, size}) => {
-          if (route.name === 'Home') {
+          if (route.name === 'home') {
             return <Icon name={'home'} size={size} color={color} />;
           } else if (route.name === 'userProfile') {
             return <Icon name={'person'} size={size} color={color} />;
@@ -52,7 +52,7 @@ const TabStack = () => {
         tabBarLabelStyle: styles.tabBarLabel,
       })}>
       <Tab.Screen
-        name="Home"
+        name="home"
         component={HomeScreen}
         options={{headerShown: false}}
       />
@@ -102,7 +102,7 @@ export default AppStack;
 const styles = StyleSheet.create({
   tabBar: {
     height: 55,
-    backgroundColor: 'white',
+    backgroundColor: '#ffffff',
     borderTopWidth: 1,
     borderColor: 'grey',
   },

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Platform,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {Colors} from '../../contants/index';
@@ -18,9 +19,8 @@ import {
   fireStoreDatabase,
 } from '../../firebase';
 import {collection, doc, getDoc} from 'firebase/firestore';
-import {setUser} from '../../redux/action/authAction';
 import SimpleToast from 'react-native-simple-toast';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {setUser} from '../../redux/action/authAction';
 const LoginScreen = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -35,12 +35,7 @@ const LoginScreen = ({navigation}) => {
       })
       .then(userSnap => {
         if (userSnap.exists()) {
-          SimpleToast.show('successfully');
           dispatch(setUser(userSnap.data()));
-          AsyncStorage.setItem('userData', JSON.stringify(userSnap.data()));
-          console.log('login:  ' + JSON.stringify(userSnap.data()));
-        } else {
-          SimpleToast.show('fail', 1);
         }
       })
       .catch(error => {
@@ -48,7 +43,7 @@ const LoginScreen = ({navigation}) => {
       });
   };
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <StatusBar
         barStyle="dark-content"
         backgroundColor={Colors.DEFAULT_WHITE}
@@ -61,10 +56,11 @@ const LoginScreen = ({navigation}) => {
         <Text style={styles.WelcomeTitle}>Welcome to</Text>
         <Text
           style={{
-            maxWidth: '50%',
+            maxWidth: '45%',
             color: Colors.SECONDARY_BLACK,
             fontFamily: 'Roboto-Medium',
             lineHeight: 20,
+            borderBottomWidth: 1,
           }}>
           Enter your Email address for sign in,Enjoy your fodd
         </Text>
@@ -82,7 +78,6 @@ const LoginScreen = ({navigation}) => {
         setValue={setEmail}
         label={'your email'}
       />
-
       <InputField
         icon={
           <Icon
@@ -157,23 +152,24 @@ const LoginScreen = ({navigation}) => {
         }
         onPress={() => {}}
       />
-    </ScrollView>
+    </View>
   );
 };
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.DEFAULT_WHITE,
+    // backgroundColor: Colors.DEFAULT_WHITE,
+    backgroundColor: Platform.OS === 'ios' ? 'blue' : '#fff',
   },
   WelCome: {
-    paddingHorizontal: 15,
+    paddingHorizontal: 24,
     paddingVertical: 20,
-    marginBottom: 20,
+
+    //marginBottom: 20,
   },
   WelcomeTitle: {
     fontSize: 30,
     fontWeight: 'bold',
-    textAlign: 'left',
     color: Colors.SECONDARY_BLACK,
   },
   Remember_Forgot: {
@@ -192,7 +188,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Roboto-Medium',
     fontSize: 16.8,
-    lineHeight: 40,
+    lineHeight: 50,
   },
 });
 export default LoginScreen;

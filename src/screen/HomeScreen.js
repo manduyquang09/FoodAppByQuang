@@ -28,8 +28,8 @@ const HomeScreen = ({navigation}) => {
     state => state.supply,
   );
   const {userData, login} = useSelector(state => state.user);
-  const [user, setUser] = useState('');
-  useEffect(async () => {
+  console.log('isss : ' + JSON.stringify(userData));
+  useEffect(() => {
     dispatch(getAllRestaurant());
     dispatch(getAllCategory());
     dispatch(getAllFood());
@@ -62,7 +62,11 @@ const HomeScreen = ({navigation}) => {
   };
   return (
     <ScrollView style={styles.container}>
-      <StatusBar translucent barStyle={'dark-content'} />
+      <StatusBar
+        backgroundColor={'#fff'}
+        translucent
+        barStyle={'dark-content'}
+      />
       <Space Size={StatusBar.currentHeight} />
       <View style={styles.header}>
         <Image

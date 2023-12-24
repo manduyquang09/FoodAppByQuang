@@ -11,14 +11,11 @@ import React, {useEffect, useState} from 'react';
 import {Colors} from '../../contants/index';
 import Space from '../../components/Space';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import Fonts from '../../contants/Fonts';
-import Header from '../../components/header';
 import InputField from '../../components/InputField';
 import CustomButton from '../../components/customButton';
-import {Register} from '../../services/AuthenicationService';
 import {createUserWithEmailAndPassword} from 'firebase/auth';
 import {auth, fireStoreDatabase} from '../../firebase';
-import {collection, doc, setDoc} from 'firebase/firestore';
+import {doc, setDoc} from 'firebase/firestore';
 import SimpleToast from 'react-native-simple-toast';
 const RegisterScreen = ({navigation}) => {
   const [userName, setUserName] = useState('');

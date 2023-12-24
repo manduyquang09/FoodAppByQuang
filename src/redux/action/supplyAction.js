@@ -75,9 +75,7 @@ export const getTopFood = () => {
       }));
       const topFiveId = getFoodIds(orderList);
       dispatch(GetTopFood(topFiveId));
-    } catch (error) {
-      console.error('Error :', error);
-    }
+    } catch (error) {}
   };
 };
 export const getAllFood = () => {
@@ -94,9 +92,7 @@ export const getAllFood = () => {
       }));
 
       dispatch(getFood(foodList));
-    } catch (error) {
-      console.error('Error :', error);
-    }
+    } catch (error) {}
   };
 };
 
@@ -111,8 +107,6 @@ export const getAllCategory = () => {
         ...doc.data(),
       }));
       dispatch(getCategory(categoryList));
-    } catch (error) {
-      console.log('Error : ', error);
-    }
+    } catch (error) {}
   };
 };

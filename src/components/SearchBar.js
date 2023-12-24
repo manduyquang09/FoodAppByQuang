@@ -3,7 +3,7 @@ import {View, TextInput, StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Colors} from '../contants';
 const SearchBar = ({onSearch}) => {
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState(null);
   const hanleSearch = () => {
     onSearch(searchText);
   };

@@ -14,7 +14,7 @@ import {updateCart} from '../redux/action/authAction';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Colors} from '../contants';
 import {Space} from '../components/index';
-import {Setheight} from '../ultis/display';
+import {windowHeight, windowWidth} from '../ultis/display';
 const FoodDetailScreen = ({navigation, route}) => {
   const dispatch = useDispatch();
   const selectedfood = route.params.selectedfood;
@@ -35,16 +35,13 @@ const FoodDetailScreen = ({navigation, route}) => {
     };
   }, []);
   useEffect(() => {
-    console.log('1234:  ' + JSON.stringify(cart));
     if (cart.length > 0) {
       foodUnit = cart.find(food => food.foodId === selectedfood.foodId);
       if (foodUnit) {
-        console.log('unit : ' + foodUnit.unit);
         selectedfood.unit = foodUnit.unit;
         setUnit(foodUnit.unit);
       } else {
         selectedfood.unit = 0;
-        console.log('unit1 : ' + selectedfood.unit);
         setUnit(0);
       }
     } else {
@@ -64,13 +61,14 @@ const FoodDetailScreen = ({navigation, route}) => {
       <TouchableOpacity
         onPress={() => ChangeUnit(number)}
         style={styles.caculateBtn}>
-        <Icon Size={20} name={IconName} color="#000" />
+        <Icon size={30} name={IconName} color="#000" />
       </TouchableOpacity>
     );
   };
-  const CustomSize = ({iselected}) => {
+  const CustomSize = ({iselected, size}) => {
     return (
       <View
+        key={size}
         style={[
           styles.sizeBox,
           {backgroundColor: iselected ? '#f58d1d' : '#C0C0C0'},
@@ -173,13 +171,13 @@ const FoodDetailScreen = ({navigation, route}) => {
           }}>
           Size:
         </Text>
-        <CustomSize />
-        <CustomSize iselected={true} />
-        <CustomSize />
+        <CustomSize size={1} />
+        <CustomSize size={2} iselected={true} />
+        <CustomSize size={3} />
       </View>
       <TouchableOpacity
         onPress={() => navigation.navigate('cart')}
-        style={{position: 'absolute', bottom: 450, right: 5}}>
+        style={{position: 'absolute', bottom: windowHeight * 0.45, right: 10}}>
         <Image
           style={{
             width: 50,
@@ -197,21 +195,22 @@ const FoodDetailScreen = ({navigation, route}) => {
           }}>
           <Text
             style={{
-              color: '#181c2e',
+              color: '#fff',
               fontSize: 20,
               marginRight: 4,
               flex: 1,
+              letterSpacing: 1.5,
+              fontWeight: 'bold',
             }}>
             {selectedfood.price}D
           </Text>
 
           <View style={styles.caculateBox}>
             <Button IconName={'add'} isPluss={true} />
-            <Text style={{fontSize: 13, borderBottomWidth: 1}}>{unit}</Text>
+            <Text style={{fontSize: 17, borderBottomWidth: 1}}>{unit}</Text>
             <Button IconName={'remove'} isPluss={false} />
           </View>
         </View>
-        <Space Size={20} />
       </View>
     </View>
   );
@@ -235,13 +234,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
 
     paddingHorizontal: 15,
-    height: 55 * Setheight,
+    height: 50,
     width: '100%',
     justifyContent: 'center',
   },
   micheline: {
     flexDirection: 'row',
     alignItems: 'center',
+
     marginBottom: 20,
     marginHorizontal: 24,
   },
@@ -254,7 +254,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 29,
     marginHorizontal: 24,
-    width: '87%',
   },
   sizeContainer: {
     flexDirection: 'row',
@@ -269,7 +268,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   caculateBox: {
-    width: 125,
+    width: 200,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -277,30 +276,25 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     paddingVertical: 12,
     paddingHorizontal: 14,
-    shadowColor: '#00000008',
-    shadowOpacity: 0.03999999910593033,
-    shadowOffset: {
-      width: 0,
-      height: 12,
-    },
-    shadowRadius: 20,
     elevation: 20,
   },
   caculateBtn: {
     borderWidth: 1,
     elevation: 2,
-    width: 24,
-    height: 21,
+    width: 50,
+    height: 30,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#fff',
   },
   footer: {
+    alignItems: 'center',
+    justifyContent: 'center',
     position: 'absolute',
     bottom: 0,
     alignSelf: 'center',
-    width: '100%',
-    backgroundColor: '#DCA8FF',
+    width: windowWidth,
+    backgroundColor: '#292F3F',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     paddingHorizontal: 24,

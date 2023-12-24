@@ -20,15 +20,14 @@ export const getFinalAmount = cart => {
   );
   return totalPrice;
 };
-export const sendingOrder = async props => {
-  const orderList = props;
-  // const {userData, login} = useSelector(state => state.user);
-  console.log(Timestamp.fromDate(new Date()));
+export const sendingOrder = async (cartbyRestaurant, userData) => {
+  const orderList = cartbyRestaurant;
+
   try {
     for (const order of orderList) {
       const restaurantId = Object.keys(order)[0];
       const orderRef = await addDoc(collection(fireStoreDatabase, 'orders'), {
-        userId: 1,
+        userId: userData.userId,
         restaurantId: restaurantId,
         totalPrice: await getFinalAmount(Object.values(order)[0]),
         order_date: Timestamp.fromDate(new Date()),
@@ -37,14 +36,17 @@ export const sendingOrder = async props => {
       for (const food of foodList) {
         await addDoc(collection(fireStoreDatabase, 'orderList'), {
           orderId: orderRef.id,
-          userId: 1,
+          userId: userData.userId,
           foodId: food.foodId,
           total_unit: food.unit,
           order_date: Timestamp.fromDate(new Date()),
         });
       }
     }
-    return {success: true, message: 'Chúc mừng bạn đã đặt hàng thành công!'};
+    return {
+      success: true,
+      message: `Chúc mừng ${userData.userName} đã đặt hàng thành công!`,
+    };
   } catch (error) {
     return {success: false, message: JSON.stringify(error)};
   }
